@@ -7,6 +7,8 @@ class FortunePillars : JavaPlugin() {
     val mapMaker = MapMaker()
 
     override fun onEnable() {
+        Pool.init()
+
         Flow.getInstance().manager.register(Entry())
     }
 
