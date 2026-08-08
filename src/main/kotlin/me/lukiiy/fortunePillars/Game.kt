@@ -9,11 +9,12 @@ import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.title.Title
 import org.bukkit.*
+import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import java.io.IOException
 import java.nio.file.Files
-import java.nio.file.Path
 import java.time.Duration
+import java.util.*
 
 class Game : Minigame() {
     lateinit var world: World
@@ -29,13 +30,20 @@ class Game : Minigame() {
         get() = entry as Entry
 
     private val componentJoinConfig = JoinConfiguration.builder().separator(Component.text(", ")).lastSeparator(Component.text(" and ")).lastSeparatorIfSerial(Component.text(", and ")).build()
+    val boards = mutableMapOf<UUID, Board>()
 
     private val timer = Timer(360, TimerDirection.DOWN, onTick = {
-        if (it.timeSeconds % 3 == 0) {
-            TODO("item")
+        val t = it.timeSeconds
+
+        if (t % gameEntry.itemTimer.value.toInt() == 0) {
+            Bukkit.getGlobalRegionScheduler().run(FortunePillars.getInstance()) {
+                alive.forEach { a -> a.player.inventory.addItem(Pool.nextItem()) }
+            }
         }
+
+        boards.values.forEach { b -> b.update(String.format("%02d:%02d", t / 60, t % 60), alive.size, getPlayers().size) }
     }, onEnd = {
-        TODO("end")
+        end(alive)
     })
 
     override fun listeners(): List<Listener?> {
@@ -57,6 +65,8 @@ class Game : Minigame() {
             p.softReset(GameMode.ADVENTURE)
             p.teleportAsync(tower)
             p.setRespawnLocation(world.spawnLocation, true)
+
+            boards[p.uniqueId] = Board(p)
         }
 
         freeze = true
@@ -112,6 +122,9 @@ class Game : Minigame() {
         if (player.state != BasePlayer.State.PLAYING) return
 
         player.state = BasePlayer.State.SPECTATING
+        player.player.apply {
+            scheduler.runDelayed(FortunePillars.getInstance(), { this.gameMode = GameMode.SPECTATOR }, null, 5L)
+        }
 
         checkWin()
     }
@@ -159,5 +172,18 @@ class Game : Minigame() {
                 FortunePillars.getInstance().logger.severe("Could not delete instanced world " + wFolder.getName() + "! " + e.message)
             }
         }
+    }
+
+    class Board(player: Player) {
+        private val board = OnlyBoard(player, "Pillars".asMini().color(FDefaults.YELLOW).decorate(TextDecoration.BOLD))
+
+        fun update(formattedTime: String, alivePlayers: Int, totalPlayers: Int) {
+            board.updateLines(
+                Component.empty().append("Time: ".asMini().color(FDefaults.BLUE)).append(formattedTime.asMini()),
+                Component.empty().append("Players: ".asMini().color(FDefaults.BLUE)).append("$alivePlayers/$totalPlayers".asMini())
+            )
+        }
+
+        fun destroy() = board.destroy()
     }
 }
