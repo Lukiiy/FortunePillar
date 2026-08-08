@@ -1,0 +1,16 @@
+name: FortunePillars
+description: $description
+version: '${version}'
+
+main: me.lukiiy.fortunePillars.FortunePillars
+api-version: '26.2'
+load: POSTWORLD
+
+authors: [ Lukiiy ]
+
+dependencies:
+  server:
+    Flow:
+      load: BEFORE
+      required: true
+      join-classpath: true
