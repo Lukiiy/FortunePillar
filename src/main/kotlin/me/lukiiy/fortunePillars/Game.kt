@@ -9,6 +9,7 @@ import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.title.Title
 import org.bukkit.*
+import org.bukkit.event.Listener
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -36,6 +37,10 @@ class Game : Minigame() {
     }, onEnd = {
         TODO("end")
     })
+
+    override fun listeners(): List<Listener?> {
+        return listOf(Listen(this))
+    }
 
     override fun prepare() {
         world = FortunePillars.getInstance().mapMaker.create() ?: throw MinigameException("An error occurred when creating the world")
