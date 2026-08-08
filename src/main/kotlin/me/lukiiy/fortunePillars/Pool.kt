@@ -10,6 +10,8 @@ object Pool {
 
     fun init() {
         validMaterials = Material.entries.filterNot { !it.isItem || it.isAir || it in excluded }
+
+        FortunePillars.getInstance().logger.info("Setting up item pools...")
     }
 
     fun nextItem(amount: Int = 1) = ItemStack.of(validMaterials.random(), amount)
