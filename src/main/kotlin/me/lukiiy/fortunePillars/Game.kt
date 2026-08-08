@@ -3,10 +3,15 @@ package me.lukiiy.fortunePillars
 import me.lukiiy.flow.*
 import me.lukiiy.flow.FUtils.asMini
 import me.lukiiy.flow.FUtils.softReset
+import me.lukiiy.flow.component.BasePlayer
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.title.Title
 import org.bukkit.*
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Path
 import java.time.Duration
 
 class Game : Minigame() {
@@ -15,6 +20,14 @@ class Game : Minigame() {
     var freeze = true
     var end = false
     var start = 0
+
+    val alive: List<FlowPlayer>
+        get() = getPlayers().filterIsInstance<FlowPlayer>().filter { it.state == BasePlayer.State.PLAYING }
+
+    val gameEntry: Entry
+        get() = entry as Entry
+
+    private val componentJoinConfig = JoinConfiguration.builder().separator(Component.text(", ")).lastSeparator(Component.text(" and ")).lastSeparatorIfSerial(Component.text(", and ")).build()
 
     private val timer = Timer(360, TimerDirection.DOWN, onTick = {
         if (it.timeSeconds % 3 == 0) {
@@ -142,6 +155,4 @@ class Game : Minigame() {
             }
         }
     }
-
-    fun entry(): Entry = entry as Entry
 }
