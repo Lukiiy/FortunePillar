@@ -90,6 +90,41 @@ class Game : Minigame() {
         }).start()
     }
 
+    fun kill(player: FlowPlayer) {
+        if (player.state != BasePlayer.State.PLAYING) return
+
+        player.state = BasePlayer.State.SPECTATING
+
+        checkWin()
+    }
+
+    fun checkWin() {
+        val alive: List<FlowPlayer> = alive
+        if (alive.size > 1) return
+
+        val winner: FlowPlayer? = if (alive.isEmpty()) null else alive.first()
+
+        end(listOf(winner))
+    }
+
+    private fun end(winners: List<FlowPlayer?>?) {
+        if (end) return
+
+        removeSystem(timer)
+        end = true
+
+        val winnerComp = if (winners.isNullOrEmpty()) Component.text("Nobody") else Component.join(componentJoinConfig, winners.filterIsInstance<FlowPlayer>().map { it.player.displayName() }.toList())
+
+        Bukkit.getGlobalRegionScheduler().run(FortunePillars.getInstance()) {
+            forEachPlayer { it.player.sendMessage(Component.newline()
+                .append(" » ".asMini().color(FDefaults.DARK_GRAY))
+                .append("★".asMini().color(FDefaults.LIME))
+                .append(winnerComp).appendSpace()
+                .append("won!".asMini().color(FDefaults.LIME))
+                .appendNewline()) }
+        }
+    }
+
     override fun onStop() {
         Flow.getInstance().manager.lobby?.let { forEachPlayer { fp -> it.sendToLobby(fp!!) } }
 
