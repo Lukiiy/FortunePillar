@@ -17,7 +17,7 @@ class MapMaker {
             setGameRule(GameRules.ADVANCE_WEATHER, false)
             setGameRule(GameRules.SPECTATORS_GENERATE_CHUNKS, false)
             isAutoSave = false
-            spawnLocation = Location(this, 0.0, 64.0, 0.0).toCenterLocation()
+            spawnLocation = Location(this, 0.0, 32.0, 0.0).toCenterLocation()
         } ?: return null
 
         return world
@@ -46,7 +46,7 @@ class MapMaker {
                     val x = (center.x + floor(currentRadius * cos(angle))).toInt()
                     val z = (center.z + floor(currentRadius * sin(angle))).toInt()
 
-                    for (y in 64..96) world.getBlockAt(x, y, z).setType(Material.BEDROCK, false)
+                    for (y in 32..96) world.getBlockAt(x, y, z).setType(Material.BEDROCK, false)
 
                     top.add(Location(world, x + .5, 97.0, z + .5))
                 }
