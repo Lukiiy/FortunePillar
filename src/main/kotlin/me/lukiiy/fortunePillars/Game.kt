@@ -71,18 +71,6 @@ class Game : Minigame() {
 
         freeze = true
 
-        Countdown(FortunePillars.getInstance(), Duration.ofSeconds(5), { c ->
-            var color = FDefaults.GREEN
-            if (c < 4) color = FDefaults.YELLOW
-            if (c < 2) color = FDefaults.RED
-
-            forEachPlayer { it!!.player.showTitle(Title.title(Component.text("Starting in").color(FDefaults.GRAY), Component.text((c + 1).toString() + " seconds!").color(color), Title.Times.times(Duration.ZERO, Duration.ofSeconds(3), Duration.ofSeconds(1)))) }
-        }, {
-            freeze = false
-
-            forEachPlayer { it!!.player.sendMessage(Component.newline().append(" » ".asMini().color(FDefaults.DARK_GRAY)).append("Push your opponents using your random items, but don't fall down!".asMini().color(FDefaults.TEAL)).appendNewline()) }
-        }).start()
-
         Countdown(FortunePillars.getInstance(), Duration.ofSeconds(totalSeconds.toLong()), { c ->
             val secondsLeft = (c + 1).toInt()
 
