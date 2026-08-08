@@ -93,4 +93,6 @@ class Game : Minigame() {
     override fun onStop() {
         TODO("Not yet implemented")
     }
+
+    fun entry(): Entry = entry as Entry
 }
