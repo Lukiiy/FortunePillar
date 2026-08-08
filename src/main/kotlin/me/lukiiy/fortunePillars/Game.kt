@@ -1,0 +1,96 @@
+package me.lukiiy.fortunePillars
+
+import me.lukiiy.flow.*
+import me.lukiiy.flow.FUtils.asMini
+import me.lukiiy.flow.FUtils.softReset
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.title.Title
+import org.bukkit.*
+import java.time.Duration
+
+class Game : Minigame() {
+    lateinit var world: World
+
+    var freeze = true
+    var end = false
+    var start = 0
+
+    private val timer = Timer(360, TimerDirection.DOWN, onTick = {
+        if (it.timeSeconds % 3 == 0) {
+            TODO("item")
+        }
+    }, onEnd = {
+        TODO("end")
+    })
+
+    override fun prepare() {
+        world = FortunePillars.getInstance().mapMaker.create() ?: throw MinigameException("An error occurred when creating the world")
+    }
+
+    override fun onStart() {
+        val players = getPlayers().filterIsInstance<FlowPlayer>()
+        val towerSpawn: List<Location> = MapMaker.genPillars(world.spawnLocation, players.size, 12)
+        val totalSeconds = 5
+
+        players.zip(towerSpawn).forEach { (it, tower) ->
+            val p = it.player
+
+            p.softReset(GameMode.ADVENTURE)
+            p.teleportAsync(tower)
+            p.setRespawnLocation(world.spawnLocation, true)
+        }
+
+        freeze = true
+
+        Countdown(FortunePillars.getInstance(), Duration.ofSeconds(5), { c ->
+            var color = FDefaults.GREEN
+            if (c < 4) color = FDefaults.YELLOW
+            if (c < 2) color = FDefaults.RED
+
+            forEachPlayer { it!!.player.showTitle(Title.title(Component.text("Starting in").color(FDefaults.GRAY), Component.text((c + 1).toString() + " seconds!").color(color), Title.Times.times(Duration.ZERO, Duration.ofSeconds(3), Duration.ofSeconds(1)))) }
+        }, {
+            freeze = false
+
+            forEachPlayer { it!!.player.sendMessage(Component.newline().append(" » ".asMini().color(FDefaults.DARK_GRAY)).append("Push your opponents using your random items, but don't fall down!".asMini().color(FDefaults.TEAL)).appendNewline()) }
+        }).start()
+
+        Countdown(FortunePillars.getInstance(), Duration.ofSeconds(totalSeconds.toLong()), { c ->
+            val secondsLeft = (c + 1).toInt()
+
+            val color = when {
+                secondsLeft > 3 -> FDefaults.GREEN
+                secondsLeft > 1 -> FDefaults.YELLOW
+                else -> FDefaults.RED
+            }
+
+            // Action bar countdown :3
+            val active = "▌".repeat(secondsLeft)
+            val inactive = "▌".repeat((totalSeconds - secondsLeft))
+
+            forEachPlayer {
+                it!!.player.apply {
+                    sendActionBar("Game Start ".asMini().append("»".asMini().decorate(TextDecoration.BOLD)).appendSpace().append(active.asMini().color(color)).append(inactive.asMini().color(FDefaults.DARK_GRAY)).append(" $secondsLeft".asMini()))
+                    playSound(this, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1f, 1f + ((totalSeconds - secondsLeft) * .15f))
+
+                    if (secondsLeft == 3) sendMessage(Component.newline().append(" » ".asMini().color(FDefaults.DARK_GRAY)).append("Push your opponents using your random items, but don't fall down!".asMini().color(FDefaults.TEAL)).appendNewline())
+                }
+            }
+        }, {
+            freeze = false
+
+            addSystem(timer)
+
+            forEachPlayer {
+                it!!.player.apply {
+                    sendActionBar(Component.empty())
+                    playSound(this, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1f, 2f)
+                }
+            }
+        }).start()
+    }
+
+    override fun onStop() {
+        TODO("Not yet implemented")
+    }
+}
