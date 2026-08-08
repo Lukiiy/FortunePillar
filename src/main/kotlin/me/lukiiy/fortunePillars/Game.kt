@@ -62,7 +62,7 @@ class Game : Minigame() {
             p.teleportAsync(tower)
             p.setRespawnLocation(world.spawnLocation, true)
             boards[p.uniqueId] = Board(p)
-            p.sendMessage(Component.newline().append(" » ".asMini().color(FDefaults.DARK_GRAY)).append("ℹ".asMini().color(FDefaults.BLUE)).append(" Push your opponents using your random items, but don't fall down!".asMini().color(FDefaults.TEAL)).appendNewline())
+            p.sendMessage(Component.newline().append(" » ".asMini().color(FDefaults.DARK_GRAY)).append("ℹ".asMini().color(FDefaults.YELLOW)).append(" Push your opponents using your random items, but don't fall down!".asMini().color(FDefaults.WHITE)).appendNewline())
         }
 
         freeze = true
@@ -72,7 +72,8 @@ class Game : Minigame() {
 
             val color = when {
                 secondsLeft > 3 -> FDefaults.GREEN
-                secondsLeft > 1 -> FDefaults.YELLOW
+                secondsLeft == 2 -> FDefaults.ORANGE
+                secondsLeft == 1 -> FDefaults.YELLOW
                 else -> FDefaults.RED
             }
 
