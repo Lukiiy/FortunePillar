@@ -7,7 +7,6 @@ import me.lukiiy.flow.component.BasePlayer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.title.Title
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -19,9 +18,8 @@ import java.util.*
 class Game : Minigame() {
     lateinit var world: World
 
-    var freeze = true
+    var freeze = false
     var end = false
-    var start = 0
 
     val alive: List<FlowPlayer>
         get() = getPlayers().filterIsInstance<FlowPlayer>().filter { it.state == BasePlayer.State.PLAYING }
@@ -32,16 +30,14 @@ class Game : Minigame() {
     private val componentJoinConfig = JoinConfiguration.builder().separator(Component.text(", ")).lastSeparator(Component.text(" and ")).lastSeparatorIfSerial(Component.text(", and ")).build()
     val boards = mutableMapOf<UUID, Board>()
 
-    private val timer = Timer(360, TimerDirection.DOWN, onTick = {
-        val t = it.timeSeconds
-
-        if (t % gameEntry.itemTimer.value.toInt() == 0) {
+    val timer = Timer(360, TimerDirection.DOWN, onTick = {
+        if (it.timeSeconds % gameEntry.itemTimer.value.toInt() == 0) {
             Bukkit.getGlobalRegionScheduler().run(FortunePillars.getInstance()) {
                 alive.forEach { a -> a.player.inventory.addItem(Pool.nextItem()) }
             }
         }
 
-        boards.values.forEach { b -> b.update(String.format("%02d:%02d", t / 60, t % 60), alive.size, getPlayers().size) }
+        boards.values.forEach { b -> b.update(it.formattedTime, alive.size, getPlayers().size) }
     }, onEnd = {
         end(alive)
     })
@@ -65,8 +61,8 @@ class Game : Minigame() {
             p.softReset(GameMode.ADVENTURE)
             p.teleportAsync(tower)
             p.setRespawnLocation(world.spawnLocation, true)
-
             boards[p.uniqueId] = Board(p)
+            p.sendMessage(Component.newline().append(" » ".asMini().color(FDefaults.DARK_GRAY)).append("ℹ".asMini().color(FDefaults.BLUE)).append(" Push your opponents using your random items, but don't fall down!".asMini().color(FDefaults.TEAL)).appendNewline())
         }
 
         freeze = true
@@ -88,8 +84,6 @@ class Game : Minigame() {
                 it!!.player.apply {
                     sendActionBar("Game Start ".asMini().append("»".asMini().decorate(TextDecoration.BOLD)).appendSpace().append(active.asMini().color(color)).append(inactive.asMini().color(FDefaults.DARK_GRAY)).append(" $secondsLeft".asMini()))
                     playSound(this, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1f, 1f + ((totalSeconds - secondsLeft) * .15f))
-
-                    if (secondsLeft == 3) sendMessage(Component.newline().append(" » ".asMini().color(FDefaults.DARK_GRAY)).append("Push your opponents using your random items, but don't fall down!".asMini().color(FDefaults.TEAL)).appendNewline())
                 }
             }
         }, {
@@ -101,6 +95,8 @@ class Game : Minigame() {
                 it!!.player.apply {
                     sendActionBar(Component.empty())
                     playSound(this, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1f, 2f)
+
+                    gameMode = GameMode.SURVIVAL
                 }
             }
         }).start()
@@ -132,16 +128,26 @@ class Game : Minigame() {
         removeSystem(timer)
         end = true
 
-        val winnerComp = if (winners.isNullOrEmpty()) Component.text("Nobody") else Component.join(componentJoinConfig, winners.filterIsInstance<FlowPlayer>().map { it.player.displayName() }.toList())
+        val valid = winners?.filterNotNull() ?: emptyList()
+
+        val winnerComp = if (valid.isEmpty()) "Nobody".asMini() else Component.join(componentJoinConfig, valid.map { it.player.displayName() }.toList())
 
         Bukkit.getGlobalRegionScheduler().run(FortunePillars.getInstance()) {
-            forEachPlayer { it.player.sendMessage(Component.newline()
-                .append(" » ".asMini().color(FDefaults.DARK_GRAY))
-                .append("★".asMini().color(FDefaults.LIME))
-                .append(winnerComp).appendSpace()
-                .append("won!".asMini().color(FDefaults.LIME))
-                .appendNewline()) }
+            forEachPlayer {
+                it.player.sendMessage(Component.newline()
+                    .append(" » ".asMini().color(FDefaults.DARK_GRAY))
+                    .append("★".asMini().color(FDefaults.LIME)).appendSpace()
+                    .append(winnerComp).appendSpace()
+                    .append("won!".asMini().color(FDefaults.LIME))
+                    .appendNewline())
+
+                boards[it.player.uniqueId]?.destroy()
+            }
         }
+
+        Bukkit.getGlobalRegionScheduler().runDelayed(FortunePillars.getInstance(), {
+            stop()
+        }, 100L)
     }
 
     override fun onStop() {
@@ -167,8 +173,8 @@ class Game : Minigame() {
 
         fun update(formattedTime: String, alivePlayers: Int, totalPlayers: Int) {
             board.updateLines(
-                Component.empty().append("Time: ".asMini().color(FDefaults.BLUE)).append(formattedTime.asMini()),
-                Component.empty().append("Players: ".asMini().color(FDefaults.BLUE)).append("$alivePlayers/$totalPlayers".asMini())
+                Component.empty().append("Time: ".asMini().color(FDefaults.DARK_BLUE)).append(formattedTime.asMini()),
+                Component.empty().append("Players: ".asMini().color(FDefaults.DARK_BLUE)).append("$alivePlayers/$totalPlayers".asMini())
             )
         }
 

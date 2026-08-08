@@ -2,6 +2,7 @@ package me.lukiiy.fortunePillars
 
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.BlockFromToEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerMoveEvent
 
@@ -13,11 +14,13 @@ class Listen(private val game: Game) : Listener {
 
     @EventHandler
     fun move(e: PlayerMoveEvent) {
+        val fp = game.getFlowPlayer(e.player)?.get() ?: return
+
         if (game.freeze) {
             val from = e.from
             val to = e.to
 
-            if (from.x != to.x || from.y != to.y || from.z != to.z) {
+            if (from.x != to.x || from.z != to.z) {
                 e.isCancelled = true
 
                 e.to = from.clone().apply {
@@ -28,5 +31,12 @@ class Listen(private val game: Game) : Listener {
 
             return
         }
+
+        if (e.to.y < 28.0 && !game.end) game.kill(fp)
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun blockFromTo(e: BlockFromToEvent) {
+        if (e.toBlock.y < 28) e.isCancelled = true
     }
 }
