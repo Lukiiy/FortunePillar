@@ -17,8 +17,6 @@ class MapMaker {
             setGameRule(GameRules.ADVANCE_WEATHER, false)
             setGameRule(GameRules.SPECTATORS_GENERATE_CHUNKS, false)
             isAutoSave = false
-            viewDistance = 2
-            simulationDistance = 2
             spawnLocation = Location(this, 0.0, 64.0, 0.0).toCenterLocation()
         } ?: return null
 
