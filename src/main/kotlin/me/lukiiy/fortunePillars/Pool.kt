@@ -12,6 +12,6 @@ object Pool {
         validMaterials = Material.entries.filterNot { !it.isItem || it.isAir || it in excluded }
     }
 
-    fun nextItem(amount: Int = 1): ItemStack = ItemStack(validMaterials.random(), amount)
+    fun nextItem(amount: Int = 1) = ItemStack.of(validMaterials.random(), amount)
     fun nextMaterial(): Material = validMaterials.random()
 }
