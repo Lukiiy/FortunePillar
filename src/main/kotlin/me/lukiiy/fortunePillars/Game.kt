@@ -91,7 +91,21 @@ class Game : Minigame() {
     }
 
     override fun onStop() {
-        TODO("Not yet implemented")
+        Flow.getInstance().manager.lobby?.let { forEachPlayer { fp -> it.sendToLobby(fp!!) } }
+
+        val wFolder = world.worldFolder
+
+        Bukkit.getServer().unloadWorld(world, false)
+
+        if (wFolder.exists()) {
+            try {
+                Files.walk(wFolder.toPath()).use {
+                    it.sorted(Comparator.reverseOrder()).forEach { p -> p.toFile().delete() }
+                }
+            } catch (e: IOException) {
+                FortunePillars.getInstance().logger.severe("Could not delete instanced world " + wFolder.getName() + "! " + e.message)
+            }
+        }
     }
 
     fun entry(): Entry = entry as Entry
