@@ -52,7 +52,7 @@ class Game : Minigame() {
 
     override fun onStart() {
         val players = getPlayers().filterIsInstance<FlowPlayer>()
-        val towerSpawn: List<Location> = MapMaker.genPillars(world.spawnLocation, players.size, 12)
+        val towerSpawn: List<Location> = MapMaker.genPillars(world.spawnLocation, players.size, gameEntry.radius.value.toInt())
         val totalSeconds = 5
 
         players.zip(towerSpawn).forEach { (it, tower) ->
