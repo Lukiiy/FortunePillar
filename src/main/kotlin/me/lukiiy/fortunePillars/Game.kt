@@ -37,7 +37,7 @@ class Game : Minigame() {
             }
         }
 
-        boards.values.forEach { b -> b.update(it.formattedTime, alive.size, getPlayers().size) }
+        boards.values.forEach { b -> b.update(it.formattedTime) }
     }, onEnd = {
         end(alive)
     })
@@ -172,12 +172,7 @@ class Game : Minigame() {
     class Board(player: Player) {
         private val board = OnlyBoard(player, "Pillars".asMini().color(FDefaults.YELLOW).decorate(TextDecoration.BOLD))
 
-        fun update(formattedTime: String, alivePlayers: Int, totalPlayers: Int) {
-            board.updateLines(
-                Component.empty().append("Time: ".asMini().color(FDefaults.DARK_BLUE)).append(formattedTime.asMini()),
-                Component.empty().append("Players: ".asMini().color(FDefaults.DARK_BLUE)).append("$alivePlayers/$totalPlayers".asMini())
-            )
-        }
+        fun update(formattedTime: String) = board.updateLines(Component.empty().append("Time: ".asMini().color(FDefaults.DARK_BLUE)).append(formattedTime.asMini()))
 
         fun destroy() = board.destroy()
     }
