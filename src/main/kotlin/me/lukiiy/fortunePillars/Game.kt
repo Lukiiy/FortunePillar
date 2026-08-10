@@ -73,8 +73,8 @@ class Game : Minigame() {
             val color = when {
                 secondsLeft > 3 -> FDefaults.GREEN
                 secondsLeft == 2 -> FDefaults.ORANGE
-                secondsLeft == 1 -> FDefaults.YELLOW
-                else -> FDefaults.RED
+                secondsLeft == 1 -> FDefaults.RED
+                else -> FDefaults.YELLOW
             }
 
             // Action bar countdown :3
