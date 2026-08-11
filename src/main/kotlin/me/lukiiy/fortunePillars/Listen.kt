@@ -32,7 +32,7 @@ class Listen(private val game: Game) : Listener {
             return
         }
 
-        if (e.to.y < 28.0 && !game.end) game.kill(fp)
+        if (e.to.y < 28.0 && !game.end) e.player.damage(e.player.health, DamageSource.builder(DamageType.OUT_OF_WORLD).build())
     }
 
     @EventHandler(ignoreCancelled = true)
