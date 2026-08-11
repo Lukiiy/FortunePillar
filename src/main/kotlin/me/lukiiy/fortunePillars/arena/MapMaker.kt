@@ -26,18 +26,19 @@ class MapMaker {
     class VoidGen : ChunkGenerator()
 
     companion object {
+        const val PI2 = PI * 2
+
         fun genPillars(center: Location, totalPoints: Int, initialRadius: Int): List<Location> {
             val world = center.world ?: return emptyList()
             val top = ArrayList<Location>(totalPoints)
             var pointsRemaining = totalPoints
             var currentIdx = 0
-            val pi2 = PI * 2
 
             while (pointsRemaining > 0) {
                 val ringCapacity = 8 + (currentIdx * 4)
                 val ringPoints = minOf(pointsRemaining, ringCapacity)
                 val currentRadius = initialRadius + (currentIdx * 8) // ring spacing!
-                val angleStep = pi2 / ringPoints
+                val angleStep = PI2 / ringPoints
 
                 repeat(ringPoints) {
                     val angle = it * angleStep
@@ -56,6 +57,22 @@ class MapMaker {
             }
 
             return top
+        }
+
+        fun getBounds(center: Location, totalPoints: Int, initialRadius: Int): MapBounds {
+            var points = totalPoints
+            var ring = 0
+
+            while (points > 0) {
+                val ringCapacity = 8 + ring * 4
+
+                points -= ringCapacity
+                ring++
+            }
+
+            val outerRadius = initialRadius + (ring - 1) * 8
+
+            return MapBounds(center, outerRadius + 8, 112)
         }
     }
 }
