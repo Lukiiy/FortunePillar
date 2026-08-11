@@ -4,6 +4,7 @@ import me.lukiiy.flow.*
 import me.lukiiy.flow.FUtils.asMini
 import me.lukiiy.flow.FUtils.softReset
 import me.lukiiy.flow.component.BasePlayer
+import me.lukiiy.fortunePillars.arena.MapBounds
 import me.lukiiy.fortunePillars.arena.MapMaker
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
@@ -18,6 +19,7 @@ import java.util.*
 
 class Game : Minigame() {
     lateinit var world: World
+    lateinit var bounds: MapBounds
 
     var freeze = false
     var end = false
@@ -54,6 +56,9 @@ class Game : Minigame() {
     override fun onStart() {
         val players = getPlayers().filterIsInstance<FlowPlayer>()
         val towerSpawn: List<Location> = MapMaker.genPillars(world.spawnLocation, players.size, gameEntry.radius.value.toInt())
+
+        bounds = MapMaker.getBounds(world.spawnLocation, players.size, gameEntry.radius.value.toInt())
+
         val totalSeconds = 5
 
         players.zip(towerSpawn).forEach { (it, tower) ->
