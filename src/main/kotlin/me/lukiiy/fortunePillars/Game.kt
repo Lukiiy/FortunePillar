@@ -36,7 +36,11 @@ class Game : Minigame() {
     val timer = Timer(360, TimerDirection.DOWN, onTick = {
         if (it.timeSeconds % gameEntry.itemTimer.value.toInt() == 0) {
             Bukkit.getGlobalRegionScheduler().run(FortunePillars.getInstance()) {
-                alive.forEach { a -> a.player.inventory.addItem(Pool.nextItem()) }
+                val item = if (gameEntry.same4all.value) Pool.nextItem() else null
+
+                alive.forEach { a ->
+                    a.player.inventory.addItem(item ?: Pool.nextItem())
+                }
             }
         }
 
