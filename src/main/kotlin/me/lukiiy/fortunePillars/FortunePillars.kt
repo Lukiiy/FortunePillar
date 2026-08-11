@@ -1,6 +1,7 @@
 package me.lukiiy.fortunePillars
 
 import me.lukiiy.flow.Flow
+import me.lukiiy.fortunePillars.arena.MapMaker
 import org.bukkit.plugin.java.JavaPlugin
 
 class FortunePillars : JavaPlugin() {

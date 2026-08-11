@@ -1,4 +1,4 @@
-package me.lukiiy.fortunePillars
+package me.lukiiy.fortunePillars.arena
 
 import org.bukkit.*
 import org.bukkit.generator.ChunkGenerator
