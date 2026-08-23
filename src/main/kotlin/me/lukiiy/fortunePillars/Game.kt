@@ -68,8 +68,10 @@ class Game : Minigame() {
         players.zip(towerSpawn).forEach { (it, tower) ->
             val p = it.player
 
-            p.softReset(GameMode.ADVENTURE)
-            p.teleportAsync(tower)
+            p.teleportAsync(tower).thenAccept {
+                p.scheduler.run(FortunePillars.getInstance(), { p.softReset(GameMode.ADVENTURE) }, null)
+            }
+
             p.setRespawnLocation(world.spawnLocation, true)
             boards[p.uniqueId] = Board(p)
             p.sendMessage(Component.newline().append(" » ".asMini().color(FDefaults.DARK_GRAY)).append("ℹ".asMini().color(FDefaults.YELLOW)).append(" Push your opponents using your random items, but don't fall down!".asMini().color(FDefaults.WHITE)).appendNewline())
