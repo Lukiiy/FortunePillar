@@ -20,7 +20,7 @@ import java.util.*
 
 class Game : Minigame() {
     lateinit var world: World
-    lateinit var bounds: MapBounds
+    var bounds: MapBounds? = null
 
     var freeze = false
     var end = false

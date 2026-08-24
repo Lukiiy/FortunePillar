@@ -40,7 +40,7 @@ class Listen(private val game: Game) : Listener {
 
         if (e.to.y < 28.0 && !game.end) p.damage(p.health, DamageSource.builder(DamageType.OUT_OF_WORLD).build())
 
-        if (!game.bounds.isInBoundsHorizontally(e.to)) p.velocity = p.world.spawnLocation.toVector().subtract(p.location.toVector()).normalize().multiply(.15).setY(0)
+        game.bounds?.let { if (!it.isInBoundsHorizontally(e.to)) p.velocity = p.world.spawnLocation.toVector().subtract(p.location.toVector()).normalize().multiply(.15).setY(-1) }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -50,7 +50,7 @@ class Listen(private val game: Game) : Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun blockPlace(e: BlockPlaceEvent) {
-        if (game.bounds.isInBoundsVertically(e.block.location)) return
+        if (game.bounds?.isInBoundsVertically(e.block.location) ?: false) return
 
         e.isCancelled = true
         e.player.sendMessage("⚠ You've reached the height limit!".asMini().color(FDefaults.RED))
