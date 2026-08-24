@@ -17,7 +17,7 @@ class MapMaker {
             setGameRule(GameRules.ADVANCE_WEATHER, false)
             setGameRule(GameRules.SPECTATORS_GENERATE_CHUNKS, false)
             isAutoSave = false
-            spawnLocation = Location(this, 0.0, 32.0, 0.0).toCenterLocation()
+            spawnLocation = Location(this, 0.0, 97.0, 0.0).toCenterLocation()
         } ?: return null
 
         return world
