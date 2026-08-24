@@ -1,5 +1,6 @@
 package me.lukiiy.fortunePillars
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import me.lukiiy.flow.*
 import me.lukiiy.flow.FUtils.asMini
 import me.lukiiy.flow.FUtils.softReset
@@ -142,8 +143,18 @@ class Game : Minigame() {
         end = true
 
         val valid = winners?.filterNotNull() ?: emptyList()
-
         val winnerComp = if (valid.isEmpty()) "Nobody".asMini() else Component.join(componentJoinConfig, valid.map { it.player.displayName() }.toList())
+
+        var winnerEffect: ScheduledTask? = Bukkit.getGlobalRegionScheduler().runAtFixedRate(FortunePillars.getInstance(), {
+            valid.forEach {
+                val player = it.player
+                if (!player.isOnline || player.gameMode == GameMode.SPECTATOR) return@forEach
+
+                val loc = player.location
+
+                loc.world.spawnParticle(Particle.TOTEM_OF_UNDYING, loc.add(0.0, 1.0, 0.0), 2, 0.5, 1.5, 0.5, 0.25)
+            }
+        }, 1L, 2L)
 
         Bukkit.getGlobalRegionScheduler().run(FortunePillars.getInstance()) {
             forEachPlayer {
@@ -159,6 +170,9 @@ class Game : Minigame() {
         }
 
         Bukkit.getGlobalRegionScheduler().runDelayed(FortunePillars.getInstance(), {
+            winnerEffect?.cancel()
+            winnerEffect = null
+
             stop()
         }, 100L)
     }
