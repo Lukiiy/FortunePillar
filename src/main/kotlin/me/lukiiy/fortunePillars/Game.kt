@@ -10,6 +10,7 @@ import me.lukiiy.fortunePillars.arena.MapMaker
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.title.Title
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -144,6 +145,19 @@ class Game : Minigame() {
 
         val valid = winners?.filterNotNull() ?: emptyList()
         val winnerComp = if (valid.isEmpty()) "Nobody".asMini() else Component.join(componentJoinConfig, valid.map { it.player.displayName() }.toList())
+
+        forEachPlayer { it.player.apply {
+            if (valid.contains(it)) {
+                allowFlight = true
+                isFlying = true
+
+                showTitle(Title.title("★".asMini().color(FDefaults.YELLOW).append(" You won! ".asMini().color(FDefaults.LIME)).append("★".asMini().color(FDefaults.YELLOW)), Component.empty(), Title.Times.times(Duration.ZERO, Duration.ofSeconds(3), Duration.ofSeconds(1))))
+                playSound(this, Sound.UI_TOAST_CHALLENGE_COMPLETE, .75f, 1f)
+            } else {
+                showTitle(Title.title("Game Over!".asMini().color(FDefaults.RED), Component.empty(), Title.Times.times(Duration.ZERO, Duration.ofSeconds(3), Duration.ofSeconds(1))))
+                playSound(this, Sound.ENTITY_GENERIC_EXPLODE, .75f, .5f)
+            }
+        } }
 
         var winnerEffect: ScheduledTask? = Bukkit.getGlobalRegionScheduler().runAtFixedRate(FortunePillars.getInstance(), {
             valid.forEach {
