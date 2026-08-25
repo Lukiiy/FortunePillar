@@ -34,7 +34,6 @@ class Game : Minigame() {
         get() = entry as Entry
 
     private val random = ThreadLocalRandom.current()
-    private var blockTask: ScheduledTask? = null
 
     private val componentJoinConfig = JoinConfiguration.builder().separator(Component.text(", ")).lastSeparator(Component.text(" and ")).lastSeparatorIfSerial(Component.text(", and ")).build()
     val boards = mutableMapOf<UUID, Board>()
@@ -86,7 +85,7 @@ class Game : Minigame() {
         val players = getPlayers().filterIsInstance<FlowPlayer>()
         val towerSpawn: List<Location> = MapMaker.genPillars(world.spawnLocation, players.size, gameEntry.radius.value.toInt())
 
-        bounds = MapMaker.getBounds(world.spawnLocation, players.size, gameEntry.radius.value.toInt())
+        bounds = MapMaker.getBounds(world.spawnLocation, players.size, gameEntry.radius.value.toInt() + 8)
 
         val totalSeconds = 5
 
