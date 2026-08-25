@@ -18,6 +18,7 @@ import java.io.IOException
 import java.nio.file.Files
 import java.time.Duration
 import java.util.*
+import java.util.concurrent.ThreadLocalRandom
 
 class Game : Minigame() {
     lateinit var world: World
@@ -32,6 +33,9 @@ class Game : Minigame() {
     val gameEntry: Entry
         get() = entry as Entry
 
+    private val random = ThreadLocalRandom.current()
+    private var blockTask: ScheduledTask? = null
+
     private val componentJoinConfig = JoinConfiguration.builder().separator(Component.text(", ")).lastSeparator(Component.text(" and ")).lastSeparatorIfSerial(Component.text(", and ")).build()
     val boards = mutableMapOf<UUID, Board>()
 
@@ -43,6 +47,25 @@ class Game : Minigame() {
                 alive.forEach { a ->
                     a.player.inventory.addItem(item ?: Pool.nextItem())
                 }
+            }
+        }
+
+        if (gameEntry.ablockalypse.value) {
+            alive.forEach { fp ->
+                val player = fp.player
+                if (!player.isOnline || player.gameMode == GameMode.SPECTATOR) return@forEach
+
+                val loc = player.location
+
+                // 6x6x6 cube around the player !! !
+                val x = loc.blockX + random.nextInt(-3, 3)
+                val y = loc.blockY + random.nextInt(-3, 3)
+                val z = loc.blockZ + random.nextInt(-3, 3)
+
+                val location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
+                if (bounds?.contains(location) != true || !location.block.isEmpty) return@forEach
+
+                location.block.type = Material.STONE // uuhgh a random one
             }
         }
 

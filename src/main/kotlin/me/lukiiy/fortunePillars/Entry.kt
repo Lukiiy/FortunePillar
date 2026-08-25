@@ -11,4 +11,5 @@ class Entry : GameEntry("fortunepillars", "Fortune Pillars", Supplier { Game() }
     val itemTimer: DoubleSetting = setting(DoubleSetting("itemTimer", "Random Item Period", "", 1.0, 20.0, 3.0, 1.0)) // TODO
     val radius = setting(DoubleSetting("radius", "Radius", "", 2.0, 24.0, 12.0, 1.0))
     val same4all = setting(BooleanSetting("same", "Same for everyone", "", false))
+    val ablockalypse = setting(BooleanSetting("ablockalypse", "Ablockalypse", "", false))
 }
