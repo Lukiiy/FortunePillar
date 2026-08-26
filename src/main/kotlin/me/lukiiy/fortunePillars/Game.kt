@@ -238,4 +238,18 @@ class Game : Minigame() {
 
         fun destroy() = board.destroy()
     }
+
+    private fun randomizeBlockData(data: BlockData) {
+        when (data) {
+            is Directional -> data.facing = data.faces.random()
+            is Rotatable -> data.rotation = BlockFace.entries.random()
+            is Ageable -> data.age = random.nextInt(data.maximumAge)
+            is Levelled -> data.level = random.nextInt(data.minimumLevel, data.maximumLevel + 1)
+            is Powerable -> data.isPowered = random.nextBoolean()
+            is Openable -> data.isOpen = random.nextBoolean()
+            is Waterlogged -> data.isWaterlogged = random.nextBoolean()
+            is Snowable -> data.isSnowy = random.nextBoolean()
+            is Bisected -> data.half = Bisected.Half.entries.random()
+        }
+    }
 }
