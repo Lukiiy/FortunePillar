@@ -64,7 +64,7 @@ class Game : Minigame() {
                 val location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
                 if (bounds?.contains(location) != true || !location.block.isEmpty) return@forEach
 
-                location.block.type = Material.STONE // uuhgh a random one
+                location.block.type = Pool.validBlocks.random()
             }
         }
 

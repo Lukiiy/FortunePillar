@@ -9,6 +9,10 @@ object Pool {
         Registry.MATERIAL.filter { it.isItem && !it.isAir && it !in excluded }.toList()
     }
 
+    val validBlocks: List<Material> by lazy {
+        validMaterials.filter { it.isBlock }
+    }
+
     val excluded = setOf(Material.BEDROCK, Material.BARRIER, Material.LIGHT, Material.STRUCTURE_BLOCK, Material.STRUCTURE_VOID, Material.COMMAND_BLOCK, Material.CHAIN_COMMAND_BLOCK, Material.REPEATING_COMMAND_BLOCK, Material.COMMAND_BLOCK_MINECART, Material.JIGSAW, Material.DEBUG_STICK, Material.KNOWLEDGE_BOOK, Material.LIGHT, Material.TEST_BLOCK, Material.TEST_INSTANCE_BLOCK)
 
     fun nextItem(amount: Int = 1) = ItemStack.of(validMaterials.random(), amount)
