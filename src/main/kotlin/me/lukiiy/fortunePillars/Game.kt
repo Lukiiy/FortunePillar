@@ -12,6 +12,17 @@ import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.title.Title
 import org.bukkit.*
+import org.bukkit.block.BlockFace
+import org.bukkit.block.data.Ageable
+import org.bukkit.block.data.Bisected
+import org.bukkit.block.data.BlockData
+import org.bukkit.block.data.Directional
+import org.bukkit.block.data.Levelled
+import org.bukkit.block.data.Openable
+import org.bukkit.block.data.Powerable
+import org.bukkit.block.data.Rotatable
+import org.bukkit.block.data.Snowable
+import org.bukkit.block.data.Waterlogged
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import java.io.IOException
@@ -64,7 +75,16 @@ class Game : Minigame() {
                 val location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
                 if (bounds?.contains(location) != true || !location.block.isEmpty) return@forEach
 
-                location.block.type = Pool.validBlocks.random()
+                val type = Pool.validBlocks.random()
+                val data = type.createBlockData()
+
+                randomizeBlockData(data)
+
+                location.block.apply {
+                    this.type = type
+
+                    setBlockData(data, false)
+                }
             }
         }
 
