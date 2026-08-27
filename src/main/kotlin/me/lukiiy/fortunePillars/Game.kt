@@ -116,9 +116,9 @@ class Game : Minigame() {
                 p.scheduler.run(FortunePillars.getInstance(), { p.softReset(GameMode.ADVENTURE) }, null)
             }
 
-            p.setRespawnLocation(world.spawnLocation, true)
             boards[p.uniqueId] = Board(p)
             p.sendMessage(Component.newline().append(" » ".asMini().color(FDefaults.DARK_GRAY)).append("ℹ".asMini().color(FDefaults.YELLOW)).append(" Push your opponents using your random items, but don't fall down!".asMini().color(FDefaults.WHITE)).appendNewline())
+            p.setRespawnLocation(world.spawnLocation, true)
         }
 
         freeze = true
