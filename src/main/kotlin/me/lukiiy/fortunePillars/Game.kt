@@ -184,6 +184,7 @@ class Game : Minigame() {
 
         removeSystem(timer)
         end = true
+        bounds = null
 
         val valid = winners?.filterNotNull() ?: emptyList()
         val winnerComp = if (valid.isEmpty()) "Nobody".asMini() else Component.join(componentJoinConfig, valid.map { it.player.displayName() }.toList())
