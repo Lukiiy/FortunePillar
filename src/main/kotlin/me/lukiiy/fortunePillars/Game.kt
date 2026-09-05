@@ -1,5 +1,6 @@
 package me.lukiiy.fortunePillars
 
+import io.papermc.paper.entity.LookAnchor
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import me.lukiiy.flow.*
 import me.lukiiy.flow.FUtils.asMini
@@ -103,9 +104,10 @@ class Game : Minigame() {
 
     override fun onStart() {
         val players = getPlayers().filterIsInstance<FlowPlayer>()
-        val towerSpawn: List<Location> = MapMaker.genPillars(world.spawnLocation, players.size, gameEntry.radius.value.toInt())
+        val spawn = world.spawnLocation
+        val towerSpawn: List<Location> = MapMaker.genPillars(spawn, players.size, gameEntry.radius.value.toInt())
 
-        bounds = MapMaker.getBounds(world.spawnLocation, players.size, gameEntry.radius.value.toInt() + 8)
+        bounds = MapMaker.getBounds(spawn, players.size, gameEntry.radius.value.toInt() + 8)
 
         val totalSeconds = 5
 
@@ -114,11 +116,12 @@ class Game : Minigame() {
 
             p.teleportAsync(tower).thenAccept {
                 p.scheduler.run(FortunePillars.getInstance(), { p.softReset(GameMode.ADVENTURE) }, null)
+                p.lookAt(spawn, LookAnchor.EYES)
             }
 
             boards[p.uniqueId] = Board(p)
             p.sendMessage(Component.newline().append(" » ".asMini().color(FDefaults.DARK_GRAY)).append("ℹ".asMini().color(FDefaults.YELLOW)).append(" Push your opponents using your random items, but don't fall down!".asMini().color(FDefaults.WHITE)).appendNewline())
-            p.setRespawnLocation(world.spawnLocation, true)
+            p.setRespawnLocation(spawn, true)
         }
 
         freeze = true
