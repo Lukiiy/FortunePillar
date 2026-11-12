@@ -120,7 +120,7 @@ class Game : Minigame() {
     override fun onStart() {
         val players = getPlayers().filterIsInstance<FlowPlayer>()
         val spawn = world.spawnLocation
-        val towerSpawn: List<Location> = MapMaker.genPillars(spawn, players.size, gameEntry.radius.value.toInt())
+        val towerSpawn: List<Location> = MapMaker.genPillars(spawn, players.size, gameEntry.radius.value.toInt(), gameEntry.modes.value)
 
         bounds = MapMaker.getBounds(spawn, players.size, gameEntry.radius.value.toInt() + 8)
 
