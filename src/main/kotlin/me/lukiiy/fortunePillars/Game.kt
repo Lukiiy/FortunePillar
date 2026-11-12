@@ -271,7 +271,6 @@ class Game : Minigame() {
             is Levelled -> data.level = random.nextInt(data.minimumLevel, data.maximumLevel + 1)
             is Powerable -> data.isPowered = random.nextBoolean()
             is Openable -> data.isOpen = random.nextBoolean()
-            is Waterlogged -> data.isWaterlogged = random.nextBoolean()
             is Snowable -> data.isSnowy = random.nextBoolean()
             is Bisected -> data.half = Bisected.Half.entries.random()
         }
