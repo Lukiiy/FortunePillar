@@ -61,7 +61,7 @@ class Game : Minigame() {
             }
         }
 
-        if (gameEntry.ablockalypse.value) {
+        if (gameEntry.modes.value == Modifiers.ABLOCKALYPSE) {
             alive.forEach { fp ->
                 val player = fp.player
                 if (!player.isOnline || player.gameMode == GameMode.SPECTATOR) return@forEach
