@@ -69,11 +69,13 @@ class Game : Minigame() {
                 val loc = player.location
 
                 // 6x6x6 cube around the player !! !
-                val x = loc.blockX + random.nextInt(-3, 3)
-                val y = loc.blockY + random.nextInt(-3, 3)
-                val z = loc.blockZ + random.nextInt(-3, 3)
+                val x = loc.blockX + random.nextInt(-4, 4)
+                val y = loc.blockY + random.nextInt(-4, 4)
+                val z = loc.blockZ + random.nextInt(-4, 4)
 
                 val location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
+
+                if (loc.distanceSquared(location) < 4.0) return@forEach
                 if (bounds?.contains(location) != true || !location.block.isEmpty) return@forEach
 
                 val type = Pool.validBlocks.random()
