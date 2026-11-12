@@ -11,12 +11,16 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.2.build.+")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation(files("lib/paper.jar")) // engine
+    compileOnly(files("lib/paper.jar")) // engine
 }
 
 kotlin.jvmToolchain(25)
 
 tasks {
+    shadowJar {
+        archiveClassifier.set("")
+    }
+
     build {
         dependsOn(shadowJar)
     }
