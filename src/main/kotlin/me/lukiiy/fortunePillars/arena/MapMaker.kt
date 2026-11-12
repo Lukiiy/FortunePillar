@@ -1,5 +1,6 @@
 package me.lukiiy.fortunePillars.arena
 
+import me.lukiiy.fortunePillars.Modifiers
 import org.bukkit.*
 import org.bukkit.generator.ChunkGenerator
 import java.util.*
@@ -28,11 +29,12 @@ class MapMaker {
     companion object {
         const val PI2 = PI * 2
 
-        fun genPillars(center: Location, totalPoints: Int, initialRadius: Int): List<Location> {
+        fun genPillars(center: Location, totalPoints: Int, initialRadius: Int, vararg modifiers: Modifiers): List<Location> {
             val world = center.world ?: return emptyList()
             val top = ArrayList<Location>(totalPoints)
             var pointsRemaining = totalPoints
             var currentIdx = 0
+            val portals = Modifiers.PORTALS in modifiers
 
             while (pointsRemaining > 0) {
                 val ringCapacity = 8 + (currentIdx * 4)
