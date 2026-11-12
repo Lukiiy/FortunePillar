@@ -53,10 +53,23 @@ class Game : Minigame() {
     val timer = Timer(360, TimerDirection.DOWN, onTick = {
         if (it.timeSeconds % gameEntry.itemTimer.value.toInt() == 0) {
             Bukkit.getGlobalRegionScheduler().run(FortunePillars.getInstance()) {
-                val item = if (gameEntry.same4all.value) Pool.nextItem() else null
+                val same4all = gameEntry.same4all.value
 
-                alive.forEach { a ->
-                    a.player.inventory.addItem(item ?: Pool.nextItem())
+                if (gameEntry.onlyHotbar.value) {
+                    val hotbarItems = if (same4all) {
+                        List(9) { Pool.nextItem() }
+                    } else null
+
+                    alive.forEach { fp ->
+                        val inventory = fp.player.inventory
+
+                        inventory.clear()
+                        (0..8).forEach { s -> inventory.setItem(s, hotbarItems?.get(s) ?: Pool.nextItem()) }
+                    }
+                } else {
+                    val item = if (same4all) Pool.nextItem() else null
+
+                    alive.forEach { fp -> fp.player.inventory.addItem(item ?: Pool.nextItem()) }
                 }
             }
         }

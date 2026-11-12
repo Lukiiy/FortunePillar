@@ -2,6 +2,7 @@ package me.lukiiy.fortunePillars.arena
 
 import me.lukiiy.fortunePillars.Modifiers
 import org.bukkit.*
+import org.bukkit.entity.Marker
 import org.bukkit.generator.ChunkGenerator
 import java.util.*
 import kotlin.math.PI
