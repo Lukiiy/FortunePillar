@@ -58,6 +58,20 @@ class MapMaker {
                 currentIdx++
             }
 
+            if (modifiers.contains(Modifiers.LAVA_FLOOD)) {
+                val lavaRadius = initialRadius + 8
+
+                for (dx in -lavaRadius..lavaRadius) {
+                    for (dz in -lavaRadius..lavaRadius) {
+                        if (dx * dx + dz * dz <= lavaRadius * lavaRadius) {
+                            val block = world.getBlockAt(center.blockX + dx, 32, center.blockZ + dz)
+
+                            if (block.type.isAir) block.setType(Material.LAVA, false)
+                        }
+                    }
+                }
+            }
+
             return top
         }
 
